@@ -33,7 +33,10 @@ kubectl cluster-info
 
 `kubectl get nodes` showed a single node named `minikube` in a `Ready` state, running Kubernetes version `[fill in your version here]`. `kubectl cluster-info` confirmed the address of the control plane, proving `kubectl` was correctly talking to the cluster.
 
-**Screenshots:** `screenshots/minikube-status.png`, `screenshots/nodes.png`
+![Minikube Status](screenshots/minikube-status.png) 
+
+Here is the node info:
+![Nodes](screenshots/nodes.png)
 
 -----
 
@@ -67,7 +70,7 @@ kubectl get pod nginx-pod -o yaml
 
 `describe` gave a human-readable summary of the Pod’s status, container info, and recent events. The `-o yaml` output showed the full underlying object definition Kubernetes stores for it. From this I confirmed the Pod was using the `nginx:latest` image, was in a `Running` state, was running on the `minikube` node, contained exactly one container, and had an assigned Pod IP (visible in the screenshot).
 
-**Screenshot:** `screenshots/pod.png`
+![Pod Running](screenshots/pod.png)
 
 -----
 
@@ -114,7 +117,7 @@ This revealed the actual object chain: the Deployment doesn’t create Pods dire
 
 The key difference from the standalone Pod in Part 2: that Pod was unmanaged, so if it were deleted, nothing would replace it. The Deployment’s Pods are managed by a ReplicaSet, which automatically detects and corrects any mismatch between the desired and actual Pod count. This is exactly why a Deployment is preferred over creating individual Pods manually in any real system — it provides automatic self-healing, easy scaling, and rolling updates instead of requiring manual tracking and recreation of each Pod.
 
-**Screenshot:** `screenshots/deployment.png`
+![Deployment](screenshots/deployment.png)
 
 -----
 
@@ -144,7 +147,7 @@ This confirmed the Pod count dropped from 5 to 2 — the ReplicaSet terminated 3
 
 This demonstrated why scaling a Deployment is so much easier than manually creating or deleting individual Pods: one command changes the desired count, and Kubernetes handles all the underlying creation, termination, and rescheduling automatically. Manually managing Pods would mean tracking every Pod’s name and status by hand and adjusting each one individually.
 
-**Screenshot:** `screenshots/scaling.png`
+![Scaling](screenshots/scaling.png)
 
 -----
 
@@ -180,7 +183,7 @@ This happened because the ReplicaSet doesn’t just create Pods once and walk aw
 
 This demonstrates the Kubernetes concept of **self-healing / desired-state reconciliation** — the system constantly works to keep what’s actually running in line with what was declared, without any manual intervention.
 
-**Screenshot:** `screenshots/self-healing.png`
+![Self Healing](screenshots/self-healing.png)
 
 -----
 
@@ -230,7 +233,7 @@ kubectl apply -f manifests/deployment.yaml
 
 Kubernetes immediately began replacing the broken Pods with new ones using the valid image, and they transitioned to `Running` once the image was successfully pulled. This task reinforced that `kubectl describe pod` is the essential first step for diagnosing any Pod that isn’t behaving as expected — the Events section almost always reveals the root cause.
 
-**Screenshot:** `screenshots/troubleshooting.png`
+![Troubleshooting](screenshots/troubleshooting.png)
 
 -----
 
