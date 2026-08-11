@@ -7,7 +7,7 @@ PART A — SET UP MINIKUBE
 1. What is the name of your Kubernetes node?
    minikube
 1. What Kubernetes version is running?
-   [Fill in from your `kubectl get nodes` output, e.g. v1.30.x]
+    v1.35.1
 1. Is the node in a Ready state?
    Yes, the node shows STATUS: Ready
 1. What is the purpose of Minikube?
@@ -26,13 +26,13 @@ PART B & C — CREATE AND INSPECT THE POD
 1. What node is the Pod running on?
    minikube
 1. What is the Pod’s IP address?
-   [Fill in from `kubectl describe pod nginx-pod` output]
+   10.244.0.3
 1. How many containers are inside the Pod?
    1
 1. What is the purpose of the kubectl describe command?
-   It shows detailed information about a Kubernetes resource — its
+   It shows detailed information about a Kubernetes resource, its
    configuration, current status, and recent events. It’s the main tool
-   used to diagnose why something isn’t working as expected.
+   used to diagnose why something isn’t working as expected(troubleshooting).
 
 # =====================================================
 PART C/D — CREATE A DEPLOYMENT
@@ -52,7 +52,7 @@ PART C/D — CREATE A DEPLOYMENT
 1. Why would we use a Deployment instead of creating individual Pods
    manually?
    A Deployment provides self-healing, easy scaling (one command changes
-   the replica count), and rolling updates — all handled automatically.
+   the replica count), and rolling updates, all handled automatically.
    Managing individual Pods by hand would require manually tracking each
    one, recreating failed Pods, and updating them one at a time.
 
@@ -60,7 +60,7 @@ PART C/D — CREATE A DEPLOYMENT
 PART D — DEPLOYMENT -> REPLICASET -> POD
 
 1. What ReplicaSet was created?
-   [Fill in name from `kubectl get replicasets`, e.g. web-app-xxxxxxxxxx]
+   web-app-74c64dcb99
 1. How many Pods does the ReplicaSet manage?
    3
 1. Which Kubernetes object maintains the desired number of Pods?
@@ -104,7 +104,7 @@ PART F — DEMONSTRATE KUBERNETES SELF-HEALING
    Pods to the desired number (2). Deleting a Pod created a mismatch,
    which the ReplicaSet immediately corrected by creating a new Pod.
 1. What Kubernetes concept does this demonstrate?
-   Self-healing / desired-state reconciliation — Kubernetes constantly
+   Self-healing / desired-state reconciliation. Kubernetes constantly
    works to keep the real cluster state matching the state that was
    declared.
 
@@ -112,26 +112,23 @@ PART F — DEMONSTRATE KUBERNETES SELF-HEALING
 PART G — INSPECT THE DEPLOYMENT
 
 1. What is the desired number of replicas?
-   2 (or the value shown at the point you ran this — matches the last
-   scaling step performed)
+   2 
 1. How many replicas are currently available?
-   [Fill in from `kubectl describe deployment web-app` output — should
-   match the desired number once Pods are healthy]
+   2
 1. What container image is being used?
    nginx:latest
 1. Which ReplicaSet manages the Pods?
-   [Fill in name from the describe/yaml output — same ReplicaSet as in
-   Q22, since changing replica count does not create a new ReplicaSet]
+   web-app-74c64dcb99
 1. What happens when the actual number of Pods is different from the
    desired number?
    Kubernetes creates or deletes Pods until the actual count matches the
-   desired count — the same reconciliation behavior seen in Part F.
+   desired count.
 
 # =====================================================
 PART H — TROUBLESHOOTING CHALLENGE
 
 1. What status are the new Pods showing?
-   ErrImagePull, then ImagePullBackOff
+   ErrImagePull or ImagePullBackOff
 1. What error can you find in the Pod events?
    Kubernetes reports it could not pull the image “nginx:invalid”
    because that tag does not exist in the image registry (manifest
@@ -142,7 +139,4 @@ PART H — TROUBLESHOOTING CHALLENGE
 1. How would you fix the problem?
    Change the image back to a valid tag (nginx:latest) in
    deployment.yaml and re-apply it with:
-   kubectl apply -f deployment.yaml
-
-# =====================================================
-END OF ANSWERS
+   kubectl apply -f deployment.yaml.
