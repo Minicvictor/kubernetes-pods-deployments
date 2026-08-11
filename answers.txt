@@ -1,0 +1,148 @@
+KUBERNETES PODS & DEPLOYMENTS WITH MINIKUBE — ANSWERS
+Name: Egwu Chidiebere Agha
+
+# =====================================================
+PART A — SET UP MINIKUBE
+
+1. What is the name of your Kubernetes node?
+   minikube
+1. What Kubernetes version is running?
+   [Fill in from your `kubectl get nodes` output, e.g. v1.30.x]
+1. Is the node in a Ready state?
+   Yes, the node shows STATUS: Ready
+1. What is the purpose of Minikube?
+   Minikube runs a lightweight, single-node Kubernetes cluster on a local
+   machine. It lets you practice real Kubernetes commands and workflows
+   (Pods, Deployments, scaling, self-healing) without needing cloud
+   infrastructure or a multi-node setup.
+
+# =====================================================
+PART B & C — CREATE AND INSPECT THE POD
+
+1. What image is the Pod using?
+   nginx:latest
+1. What is the status of the Pod?
+   Running
+1. What node is the Pod running on?
+   minikube
+1. What is the Pod’s IP address?
+   [Fill in from `kubectl describe pod nginx-pod` output]
+1. How many containers are inside the Pod?
+   1
+1. What is the purpose of the kubectl describe command?
+   It shows detailed information about a Kubernetes resource — its
+   configuration, current status, and recent events. It’s the main tool
+   used to diagnose why something isn’t working as expected.
+
+# =====================================================
+PART C/D — CREATE A DEPLOYMENT
+
+1. How many Pods were created?
+   3
+1. What is the name of the Deployment?
+   web-app
+1. What image are the Pods using?
+   nginx:latest
+1. What is the difference between the Pod you created earlier and the
+   Pods created by the Deployment?
+   The standalone Pod (nginx-pod) is unmanaged — if it crashes or is
+   deleted, nothing replaces it. The Pods created by the Deployment are
+   managed by a ReplicaSet, which automatically detects if a Pod goes
+   missing and creates a new one to maintain the desired count.
+1. Why would we use a Deployment instead of creating individual Pods
+   manually?
+   A Deployment provides self-healing, easy scaling (one command changes
+   the replica count), and rolling updates — all handled automatically.
+   Managing individual Pods by hand would require manually tracking each
+   one, recreating failed Pods, and updating them one at a time.
+
+# =====================================================
+PART D — DEPLOYMENT -> REPLICASET -> POD
+
+1. What ReplicaSet was created?
+   [Fill in name from `kubectl get replicasets`, e.g. web-app-xxxxxxxxxx]
+1. How many Pods does the ReplicaSet manage?
+   3
+1. Which Kubernetes object maintains the desired number of Pods?
+   The ReplicaSet
+1. What happens if one of the Pods is deleted?
+   The ReplicaSet detects that the actual Pod count has dropped below
+   the desired count and immediately creates a new Pod to replace it.
+
+# =====================================================
+PART E — SCALE THE DEPLOYMENT
+
+1. How many Pods existed before scaling?
+   3
+1. How many existed after scaling to 5?
+   5
+1. How many existed after scaling down to 2?
+   2
+1. What command did you use to scale the Deployment?
+   kubectl scale deployment web-app –replicas=5
+   kubectl scale deployment web-app –replicas=2
+1. Why is scaling a Deployment easier than manually creating additional
+   Pods?
+   A single command updates the desired replica count, and Kubernetes
+   automatically creates or terminates Pods to match it. There’s no need
+   to manually track Pod names, recreate failed instances, or update
+   each one individually.
+
+# =====================================================
+PART F — DEMONSTRATE KUBERNETES SELF-HEALING
+
+1. What happened when you deleted the Pod?
+   The Pod was terminated, and within seconds Kubernetes automatically
+   created a brand-new Pod (with a new name and IP) to replace it.
+1. How many Pods did you have after Kubernetes finished creating the
+   replacement?
+   2
+1. Did you manually create the new Pod?
+   No
+1. Why did Kubernetes create a replacement Pod?
+   The ReplicaSet continuously compares the actual number of running
+   Pods to the desired number (2). Deleting a Pod created a mismatch,
+   which the ReplicaSet immediately corrected by creating a new Pod.
+1. What Kubernetes concept does this demonstrate?
+   Self-healing / desired-state reconciliation — Kubernetes constantly
+   works to keep the real cluster state matching the state that was
+   declared.
+
+# =====================================================
+PART G — INSPECT THE DEPLOYMENT
+
+1. What is the desired number of replicas?
+   2 (or the value shown at the point you ran this — matches the last
+   scaling step performed)
+1. How many replicas are currently available?
+   [Fill in from `kubectl describe deployment web-app` output — should
+   match the desired number once Pods are healthy]
+1. What container image is being used?
+   nginx:latest
+1. Which ReplicaSet manages the Pods?
+   [Fill in name from the describe/yaml output — same ReplicaSet as in
+   Q22, since changing replica count does not create a new ReplicaSet]
+1. What happens when the actual number of Pods is different from the
+   desired number?
+   Kubernetes creates or deletes Pods until the actual count matches the
+   desired count — the same reconciliation behavior seen in Part F.
+
+# =====================================================
+PART H — TROUBLESHOOTING CHALLENGE
+
+1. What status are the new Pods showing?
+   ErrImagePull, then ImagePullBackOff
+1. What error can you find in the Pod events?
+   Kubernetes reports it could not pull the image “nginx:invalid”
+   because that tag does not exist in the image registry (manifest
+   unknown / not found).
+1. Why can’t Kubernetes successfully start the container?
+   The specified image tag doesn’t exist in the registry, so there is
+   nothing for Kubernetes to download and run the container from.
+1. How would you fix the problem?
+   Change the image back to a valid tag (nginx:latest) in
+   deployment.yaml and re-apply it with:
+   kubectl apply -f deployment.yaml
+
+# =====================================================
+END OF ANSWERS
